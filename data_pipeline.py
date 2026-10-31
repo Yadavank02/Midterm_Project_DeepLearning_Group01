@@ -153,9 +153,20 @@ def prepare_dataset_pipeline(
 ):
     texts, raw_labels = load_raw_dataset(dataset_name)
 
-    # Filter classes with fewer than 3 samples to guarantee valid stratified 3-way split
+    # Drop repeated utterances first, so no text can land in more than one split
+    seen = set()
+    unique_rows = []
+    for text, label in zip(texts, raw_labels):
+        key = " ".join(clean_and_tokenize(text))
+        if key not in seen:
+            seen.add(key)
+            unique_rows.append((text, label))
+    texts = [text for text, _ in unique_rows]
+    raw_labels = [label for _, label in unique_rows]
+
+    # Filter classes with fewer than 10 unique samples so each split gets at least one of every class
     label_counts = Counter(raw_labels)
-    valid_indices = [i for i, lbl in enumerate(raw_labels) if label_counts[lbl] >= 3]
+    valid_indices = [i for i, lbl in enumerate(raw_labels) if label_counts[lbl] >= 10]
     texts = [texts[i] for i in valid_indices]
     raw_labels = [raw_labels[i] for i in valid_indices]
 
