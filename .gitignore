@@ -20,7 +20,4 @@ dataset_cache/
 *.h5
 *.onnx
 checkpoints/
-logs/.venv
-__pycache__/
-.DS_Store
-*.pyc
+logs/
