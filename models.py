@@ -11,6 +11,24 @@ import torch.nn.functional as F
 
 
 # -------------------------------------------------------------------------
+# 0. Baseline: Bag-of-Words Logistic Regression
+# -------------------------------------------------------------------------
+class BagOfWordsLogReg(nn.Module):
+    """Logistic regression on log-scaled word counts, fed the same token ids as the deep models."""
+
+    def __init__(self, vocab_size: int, num_classes: int = 7, pad_idx: int = 0):
+        super().__init__()
+        self.vocab_size = vocab_size
+        self.pad_idx = pad_idx
+        self.fc = nn.Linear(vocab_size, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        counts = torch.zeros(x.size(0), self.vocab_size, device=x.device)
+        counts.scatter_add_(1, x, (x != self.pad_idx).float())
+        return self.fc(torch.log1p(counts))
+
+
+# -------------------------------------------------------------------------
 # 1. Convolutional Model Family (1D CNN)
 # -------------------------------------------------------------------------
 class TextCNN(nn.Module):
