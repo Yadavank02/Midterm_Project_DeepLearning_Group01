@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from datasets import load_dataset
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 
@@ -197,13 +196,6 @@ def prepare_dataset_pipeline(
     val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
 
-    # TF-IDF vectors for the classical Baseline
-    # 7. Generate unigram Bag-of-Words features for defensible Baseline model
-    tfidf = TfidfVectorizer(max_features=max_vocab_size, ngram_range=(1, 1), sublinear_tf=True)
-    X_train_tfidf = tfidf.fit_transform(train_texts).toarray()
-    X_val_tfidf = tfidf.transform(val_texts).toarray()
-    X_test_tfidf = tfidf.transform(test_texts).toarray()
-
     metadata = {
         "dataset_name": dataset_name,
         "num_classes": len(unique_labels),
@@ -212,10 +204,4 @@ def prepare_dataset_pipeline(
         "split_sizes": {"train": len(train_texts), "val": len(val_texts), "test": len(test_texts)}
     }
 
-    baseline_data = {
-        "X_train": X_train_tfidf, "y_train": np.array(train_y),
-        "X_val": X_val_tfidf,     "y_val": np.array(val_y),
-        "X_test": X_test_tfidf,   "y_test": np.array(test_y)
-    }
-
-    return (train_loader, val_loader, test_loader), vocab, metadata, baseline_data
+    return (train_loader, val_loader, test_loader), vocab, metadata
