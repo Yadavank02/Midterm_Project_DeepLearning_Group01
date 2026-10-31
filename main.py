@@ -33,6 +33,13 @@ GRID = [
     {"lr": 0.001, "weight_decay": 0.01},
     {"lr": 0.0003, "weight_decay": 0.0},
     {"lr": 0.0003, "weight_decay": 0.01},
+    # Added after the best learning rate sat at the top of the grid and the ATIS baseline underfit (val F1 0.21)
+    {"lr": 0.003, "weight_decay": 0.0},
+    {"lr": 0.003, "weight_decay": 0.01},
+    {"lr": 0.01, "weight_decay": 0.0},
+    {"lr": 0.01, "weight_decay": 0.01},
+    {"lr": 0.03, "weight_decay": 0.0},
+    {"lr": 0.03, "weight_decay": 0.01},
 ]
 RESULTS_PATH = "artifacts/results.json"
 PREDICTIONS_PATH = "artifacts/predictions.json"
@@ -162,6 +169,8 @@ def run_dataset(dataset: str, results: Dict, predictions: Dict):
         best = max(out["tuning"][family], key=lambda row: row["val_f1"])
         config = {"lr": best["lr"], "weight_decay": best["weight_decay"]}
         entry = out["variants"].setdefault(variant, {"config": config, "seeds": {}, "loss_curves": {}})
+        if entry["config"] != config:
+            entry.update({"config": config, "seeds": {}, "loss_curves": {}})
         for seed in SEEDS:
             if str(seed) in entry["seeds"]:
                 continue
