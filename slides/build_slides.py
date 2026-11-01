@@ -90,7 +90,7 @@ def seed_rows(dataset):
 # Cover
 c.setFillColor(DARK)
 c.rect(0, 0, W, H, stroke=0, fill=1)
-y = text("AIGC 5500 Midterm, Group 01: RJ and Ankit Yadav", H - 190, 24, HexColor("#F4A261"))
+y = text("AIGC 5500 Midterm, Group 01: Ranjay Salmon, Ankit Yadav, Ripan Deep Kour, Teja Ekkurthi", H - 190, 24, HexColor("#F4A261"))
 y = text("Which architecture best reads a short request?", y, 64, LIGHT, bold=True)
 text("Comparing a CNN, an LSTM and a Transformer against a simple baseline", y, 30, HexColor("#C9D3E3"))
 c.showPage()

@@ -1,7 +1,7 @@
 # AIGC 5500 Midterm Project: Comparing Convolutional, Recurrent, and Attention-Based Architectures
 
 **Course:** AIGC 5500, Advanced Deep Learning
-**Group:** Group 01: RJ and Ankit Yadav
+**Group:** Group 01: Ranjay Salmon, Ankit Yadav, Ripan Deep Kour, Teja Ekkurthi
 **Primary dataset:** SNIPS voice-assistant intents (7 classes)
 **Second dataset:** ATIS flight-booking intents (16 classes after filtering)
 
@@ -126,12 +126,14 @@ artifacts/             results, predictions, costs and figures
 
 ## Contributions
 
-| Member | Work |
-| :--- | :--- |
-| RJ | Later fixes and reruns: leakage removal, equal tuning, baseline, cost measurement, notebook, report and slides |
-| Ankit Yadav | Original pipeline, models and first experiment runs |
+| Member | Humber Student ID | Piece | Ablation owned |
+| :--- | :--- | :--- | :--- |
+| Ranjay Salmon | [TO COMPLETE] | Project lead, baseline and shared evaluation | None |
+| Ankit Yadav | N10040403 | Convolutional model | BatchNorm |
+| Ripan Deep Kour | N01454601 | Recurrent model | Bidirectionality |
+| Teja Ekkurthi | [TO COMPLETE] | Attention model and ATIS check | Positional encoding |
 
-**Ablation owners:** [TO COMPLETE: CNN, LSTM and Transformer]
+The commit history shows who committed each change, including the later fixes and reruns on `assignment-fixes`.
 
 ## References and AI assistance
 

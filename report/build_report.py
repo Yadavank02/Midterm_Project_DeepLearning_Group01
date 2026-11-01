@@ -76,7 +76,7 @@ H = lambda text: s.append(Paragraph(text, H1))
 GAP = lambda: s.append(Spacer(1, 6))
 
 s.append(Paragraph("CNN, LSTM and Transformer on Short-Text Intent Classification", TITLE))
-s.append(Paragraph("AIGC 5500 Advanced Deep Learning, Midterm Project, Group 01: RJ and Ankit Yadav", SUB))
+s.append(Paragraph("AIGC 5500 Advanced Deep Learning, Midterm Project, Group 01: Ranjay Salmon, Ankit Yadav, Ripan Deep Kour, Teja Ekkurthi", SUB))
 
 H("1 Problem and data")
 m_s, m_a = snips["meta"], atis["meta"]
@@ -189,8 +189,9 @@ P("(1) Three seeds on one split can’t support significance claims. (2) Tuning 
   "(6) The explanations of why models differ are interpretations, not tested causes.")
 
 H("9 Contributions and references")
-P("<b>Members:</b> RJ and Ankit Yadav. Per the commit history, Ankit wrote the original pipeline, models and first runs, and RJ made the later fixes "
-  "and reran the experiments. <b>Ablation owners:</b> [TO COMPLETE: name the owner of the CNN, LSTM and Transformer ablations].")
+P("<b>Ranjay Salmon:</b> project lead, baseline and shared evaluation. <b>Ankit Yadav:</b> convolutional model and BatchNorm ablation. "
+  "<b>Ripan Deep Kour:</b> recurrent model and bidirectionality ablation. <b>Teja Ekkurthi:</b> attention model, positional encoding ablation and "
+  "the ATIS check. The commit history records who committed each change.")
 P("<b>AI assistance:</b> Claude Code (Anthropic) helped review the code, implement the fixes, generate figures and draft this report. We reviewed the results. "
   "<b>References:</b> Kim (2014), Convolutional Neural Networks for Sentence Classification, EMNLP. Vaswani et al. (2017), Attention Is All You Need, NeurIPS. "
   "Coucke et al. (2018), Snips Voice Platform, arXiv:1805.10190. Hemphill et al. (1990), The ATIS Spoken Language Systems Pilot Corpus, DARPA Workshop. "
