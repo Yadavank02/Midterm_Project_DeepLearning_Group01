@@ -140,3 +140,18 @@ The commit history shows who committed each change, including the later fixes an
 3. Coucke, A., et al. (2018). *Snips Voice Platform*. arXiv:1805.10190.
 4. Hemphill, C. T., et al. (1990). *The ATIS Spoken Language Systems Pilot Corpus*. DARPA Speech and Natural Language Workshop.
 5. Claude Code (Anthropic) helped review the code, implement fixes, generate figures, and draft the report and slides.
+
+## References and Acknowledgements
+
+### Course Materials
+- Code examples and implementation techniques were adapted from previous AIGC5500 Advanced Deep Learning laboratory exercises.
+- Lecture notes, starter code, and code files provided by the course instructor were used as references for model architecture, training, and evaluation.
+
+### AI-Assisted Development
+- AI tools, including ChatGPT, were used to support brainstorming, debugging, and troubleshooting during project development.
+- AI assistance was used to help understand errors, explore possible solutions, and improve code documentation.
+- The team reviewed and tested the final implementation and experimental results.
+
+### Datasets
+- SNIPS Intent Classification Dataset.
+- ATIS (Airline Travel Information Systems) Dataset.
