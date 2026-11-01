@@ -43,13 +43,13 @@ pip install -r requirements-intel-mac.txt
 Open `midterm.ipynb` and run all cells. With `RUN_EXPERIMENTS = False` it reproduces every table and figure from the committed results. With `True` it retrains everything first. The same steps from the command line:
 
 ```bash
-python src/main.py
+python src/main.py --fresh
 python src/cost.py
 python src/compare.py
 python src/diagrams.py
 ```
 
-`main.py` saves after every run and resumes if interrupted. Trained weights go to `checkpoints/`, which is not committed, so `cost.py` needs `main.py` to have been run on that machine first.
+`--fresh` ignores the committed results and retrains everything, which overwrites `artifacts/results.json` and `artifacts/predictions.json`. `main.py` saves after every run, and running it without `--fresh` resumes an interrupted run. Trained weights go to `checkpoints/`, which is not committed, so `cost.py` needs `main.py` to have been run on that machine first.
 
 **Seeds:** 42, 123, 999. The split seed is fixed at 42, and seeds vary initialisation and shuffling.
 
