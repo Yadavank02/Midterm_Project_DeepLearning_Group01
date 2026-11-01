@@ -129,7 +129,7 @@ artifacts/             results, predictions, costs and figures
 | Ranjay Salmon | N10039663 | Project lead, baseline and shared evaluation | None |
 | Ankit Yadav | N10040403 | Convolutional model | BatchNorm |
 | Ripan Deep Kour | N01454601 | Recurrent model | Bidirectionality |
-| Teja Ekkurthi | [TO COMPLETE] | Attention model and ATIS check | Positional encoding |
+| Teja Ekkurthi | N01770622 | Attention model and ATIS check | Positional encoding |
 
 The commit history shows who committed each change, including the later fixes and reruns on `assignment-fixes`.
 
