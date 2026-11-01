@@ -43,12 +43,10 @@ pip install -r requirements-intel-mac.txt
 Open `midterm.ipynb` and run all cells. With `RUN_EXPERIMENTS = False` it reproduces every table and figure from the committed results. With `True` it retrains everything first. The same steps from the command line:
 
 ```bash
-python main.py
-python cost.py
-python compare.py
-python diagrams.py
-python report/build_report.py
-python slides/build_slides.py
+python src/main.py
+python src/cost.py
+python src/compare.py
+python src/diagrams.py
 ```
 
 `main.py` saves after every run and resumes if interrupted. Trained weights go to `checkpoints/`, which is not committed, so `cost.py` needs `main.py` to have been run on that machine first.
@@ -106,12 +104,12 @@ Test macro F1 for every seed. Each family tuned the same 10-setting grid on vali
 ## Repository layout
 
 ```text
-data_pipeline.py       loading, duplicate removal, splits, vocabulary, DataLoaders
-models.py              baseline, CNN, Bi-LSTM, Transformer with ablation toggles
-main.py                tuning and all experiment runs
-cost.py                latency and peak memory from trained checkpoints
-compare.py             tables, figures and confusion matrices
-diagrams.py            architecture diagram traced from models.py
+src/data_pipeline.py   loading, duplicate removal, splits, vocabulary, DataLoaders
+src/models.py          baseline, CNN, Bi-LSTM, Transformer with ablation toggles
+src/main.py            tuning and all experiment runs
+src/cost.py            latency and peak memory from trained checkpoints
+src/compare.py         tables, figures and confusion matrices
+src/diagrams.py        architecture diagram traced from models.py
 midterm.ipynb          runnable notebook
 report/report.pdf      written report
 slides/slides.pdf      presentation slides

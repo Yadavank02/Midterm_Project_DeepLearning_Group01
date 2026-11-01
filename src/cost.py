@@ -77,7 +77,7 @@ def run_all():
     for variant in FAMILIES:
         runs = {}
         for seed in SEEDS:
-            out = subprocess.check_output([sys.executable, "cost.py", variant, str(seed)], text=True)
+            out = subprocess.check_output([sys.executable, __file__, variant, str(seed)], text=True)
             runs[str(seed)] = json.loads(out.strip().splitlines()[-1])
             print(variant, seed, runs[str(seed)], flush=True)
         costs["models"][variant] = runs
