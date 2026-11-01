@@ -44,7 +44,7 @@ GRID = [
 RESULTS_PATH = "artifacts/results.json"
 PREDICTIONS_PATH = "artifacts/predictions.json"
 
-DEVICE = torch.device("cpu")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_num_threads(int(os.environ.get("TORCH_THREADS", "6")))
 
 # variant -> (family it takes tuned settings from, model class, constructor arguments)
@@ -120,6 +120,7 @@ def train_model(model: nn.Module, train_loader, val_loader, lr: float, weight_de
         "val_f1": best_val_f1,
         "best_epoch": best_epoch,
         "seconds_per_epoch": (time.perf_counter() - started) / EPOCHS,
+        "device": torch.cuda.get_device_name(0) if DEVICE.type == "cuda" else "cpu",
     }, loss_history
 
 
