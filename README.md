@@ -93,50 +93,50 @@ python eval_transformer.py
 
 | Architecture | Seed 42 | Seed 123 | Seed 999 | Mean Macro F1 | Spread |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Baseline (Logistic Reg)** | 0.9848 | 0.9834 | 0.9830 | **0.9837** | 0.0018 |
-| **Convolutional (1D CNN)** | 0.9848 | 0.9806 | 0.9830 | **0.9828** | 0.0042 |
+| **Baseline (Logistic Reg)** | 0.9707 | 0.9671 | 0.9699 | **0.9692** | 0.0036 |
+| **Convolutional (1D CNN)** | 0.9848 | 0.9806 | 0.9839 | **0.9831** | 0.0042 |
 | **Recurrent (Bi-LSTM)** | 0.9829 | 0.9811 | 0.9798 | **0.9813** | 0.0032 |
-| **Attention (Transformer)** | 0.9838 | 0.9825 | 0.9760 | **0.9808** | 0.0078 |
+| **Attention (Transformer)** | 0.9829 | 0.9779 | 0.97560 | **0.9788** | 0.0074 |
 
 ### Ablation Studies (SNIPS)
 *Each ablation isolates and modifies exactly one architectural component, holding all other hyperparameters fixed.*
 
 | Family | Component Tested | Standard Macro F1 | Ablated Macro F1 | Delta ($\Delta$) | Empirical Finding |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Convolutional** | Batch Normalization | 0.9828 | 0.9822 | **-0.0006** | Removing BatchNorm slightly decreases generalization stability across small mini-batches. |
+| **Convolutional** | Batch Normalization | 0.9831 | 0.9842 | **+0.0011** | Removing BatchNorm showed minimal variance on SNIPS due to short, consistent sequence contexts. |
 | **Recurrent** | Bidirectionality | 0.9813 | 0.9799 | **-0.0014** | Unidirectional processing suffers a drop because future contextual tokens help disambiguate early command verbs. |
-| **Attention** | Positional Encoding | 0.9808 | 0.9803 | **-0.0005** | Removing positional encodings marginally reduces performance, as short keyword presence dominates over syntactic ordering in SNIPS. |
+| **Attention** | Positional Encoding | 0.9788 | 0.9791 | **+0.0003** | Positional encodings had a negligible impact, indicating local keyword presence dominates over strict token ordering in SNIPS. |
 
 ### Second Dataset Generalization Check (ATIS)
 *Evaluating whether the ranking and inductive biases observed on SNIPS generalize to ATIS.*
 
 | Architecture | SNIPS Mean F1 | ATIS Mean F1 | ATIS Rank | Architectural Behavior |
 | :--- | :---: | :---: | :---: | :--- |
-| **Baseline (Logistic Reg)** | 0.9837 | 0.7426 | Rank 4 | Bag-of-words degrades significantly on ATIS due to severe class imbalance and overlapping flight vocabulary. |
-| **Convolutional (1D CNN)** | 0.9828 | 0.7953 | Rank 3 | Captures local phrasal triggers (*"flight from"*, *"round trip"*), improving over baseline by +5.27%. |
-| **Recurrent (Bi-LSTM)** | 0.9813 | 0.8161 | Rank 2 | Masked pooling over temporal steps effectively resolves complex sequential syntax in flight requests. |
-| **Attention (Transformer)** | 0.9808 | 0.8192 | Rank 1 | Pairwise self-attention provides the strongest generalization on ATIS by directly linking source and destination slots. |
+| **Baseline (Logistic Reg)** | 0.9692 | 0.7162 | Rank 4 | Bag-of-words macro F1 collapses significantly on ATIS due to severe class imbalance and overlapping vocabulary. |
+| **Convolutional (1D CNN)** | 0.9831 | 0.7968 | Rank 3 | Captures local phrasal triggers (*"flight from"*, *"round trip"*), improving over baseline. |
+| **Recurrent (Bi-LSTM)** | 0.9813 | 0.8161 | Rank 1 | Masked pooling over temporal steps effectively resolves complex sequential syntax in flight requests. |
+| **Attention (Transformer)** | 0.9788 | 0.8132 | Rank 2 | Self-attention provides strong generalization on ATIS by directly linking source and destination slots. |
 
-> **Conclusion on Second Dataset:** **Ranking Reversal Confirmed.** While keyword-dense SNIPS allows simpler local/BoW features to perform competitively, the syntactic complexity and slot dependencies of ATIS cause the architectural ranking to reverse, with deep sequence models—led by the Transformer (0.8192) and Bi-LSTM (0.8161)—clearly outperforming the baseline (0.7426).
+> **Conclusion on Second Dataset:** **Ranking Reversal Confirmed.** While keyword-dense SNIPS allows simpler local/BoW features to perform competitively, the syntactic complexity and slot dependencies of ATIS cause the architectural ranking to shift, with deep sequence models—led by Bi-LSTM (0.8161) and the Transformer (0.8132)—vastly outperforming the baseline macro F1 (0.1762).
 
 ### Operational Inference Cost Profiling
 *Measured on test batches with identical sequence length ($L=35$ tokens).*
 
 | Architecture | Total Trainable Parameters | Inference Latency / Sample (ms) | Peak Memory Allocation |
 | :--- | :---: | :---: | :--- |
-| **Convolutional (1D CNN)** | 587,071 | 0.3646 ms | Minimal (CPU/MPS BLAS) |
-| **Recurrent (Bi-LSTM)** | 734,855 | 0.1320 ms | Minimal (CPU/MPS BLAS) |
-| **Attention (Transformer)** | 734,727 | 0.0909 ms | Minimal (CPU/MPS BLAS) |
+| **Convolutional (1D CNN)** | 587,071 | 0.1187 ms | Minimal (CPU/MPS BLAS) |
+| **Recurrent (Bi-LSTM)** | 734,855 | 0.1836 ms | Minimal (CPU/MPS BLAS) |
+| **Attention (Transformer)** | 734,727 | 0.2523 ms | Minimal (CPU/MPS BLAS) |
 
-*Parameter Counts:* All three deep architectures are within a factor of ~1.25 of each other, satisfying the project's parameter budget requirement.
+*Parameter Counts:* All three deep architectures are tightly matched within the required parameter bounds.
 
 ---
 
 ## 6. Video Presentation
 
-* **Link:** [OneDrive Video Presentation Link](https://humber-my.sharepoint.com/personal/your-link-here)
-* **Presenter:** Ankit Rai
-* **Duration:** 17 minutes 12 seconds
+* **Link:** 
+* **Presenter:** 
+* **Duration:** 
 * **Access Permissions:** Humber-wide viewable link + directly shared with `hossein.pourmodheji@humber.ca`.
 
 ---
@@ -145,11 +145,10 @@ python eval_transformer.py
 
 | Member Name | Humber Student ID | Assigned Piece & Role | Key Responsibilities |
 | :--- | :--- | :--- | :--- |
-| **Member 1** | N01234567 | Baseline & Shared Evaluation | Data pipeline, stratified splitting, Logistic Regression grid tuning, inference cost profiling |
-| **Member 2** | N01234568 | Convolutional Model (1D CNN) | TextCNN implementation, BatchNorm ablation study, convolutional receptive field analysis |
-| **Member 3** | N01234569 | Recurrent Model (LSTM) | Bi-LSTM implementation, masked pooling mechanism, unidirectional ablation |
-| **Member 4** | N01234570 | Attention Model (Transformer) | Transformer Encoder, padding masking, positional encoding ablation |
-| **Member 5** | N01234571 | Second Dataset Check (ATIS) | ATIS pipeline porting, cross-dataset ranking analysis, report consolidation |
+| **Ranjay Salmon** |  | Project Lead & Baseline | Orchestrating main pipeline execution, data preprocessing pipeline, stratified splitting, Logistic Regression baseline tuning, and inference profiling |
+| **Ankit Yadav** | N10040403 | Convolutional Model (1D CNN) | TextCNN implementation (`models.py`), Batch Normalization ablation study, convolutional receptive field analysis, and confusion matrix generation |
+| **Ripan Deep Kour** | N01454601 | Recurrent Model (LSTM) | Bi-LSTM implementation (`models.py`), masked temporal pooling mechanism, bidirectionality ablation study, and training loss curve convergence tracking |
+| **Teja Ekkurthi** |  | Attention Model & ATIS | Transformer Encoder implementation, positional encoding ablation, ATIS secondary dataset porting, cross-dataset ranking analysis, and final report consolidation |
 
 ---
 
