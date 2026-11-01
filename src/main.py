@@ -5,12 +5,14 @@ Tunes every family on the same validation grid, then runs Baseline, CNN, RNN and
 + Ablations over Seeds 42, 123, 999 on one fixed split per dataset.
 Exports results to artifacts/results.json and test predictions to artifacts/predictions.json.
 Both are saved after every run, so an interrupted run resumes where it stopped.
+Pass --fresh to ignore existing results and retrain everything.
 """
 
 import copy
 import json
 import os
 import random
+import sys
 import time
 from typing import Dict, List, Tuple
 
@@ -192,16 +194,16 @@ def run_dataset(dataset: str, results: Dict, predictions: Dict):
             print(f"{dataset} {variant} seed={seed} test_f1={res['test_f1']:.4f}", flush=True)
 
 
-def run_full_suite():
+def run_full_suite(fresh: bool = False):
     os.makedirs("artifacts", exist_ok=True)
-    results = load_json(RESULTS_PATH)
+    results = {} if fresh else load_json(RESULTS_PATH)
     if "variants" not in results.get("SNIPS", {"variants": 0}):
         results = {}  # results from the earlier pipeline can't be resumed
-    predictions = load_json(PREDICTIONS_PATH)
+    predictions = {} if fresh else load_json(PREDICTIONS_PATH)
     for dataset in DATASET_VARIANTS:
         run_dataset(dataset, results, predictions)
     print("\nBenchmark complete. Outputs saved to artifacts/")
 
 
 if __name__ == "__main__":
-    run_full_suite()
+    run_full_suite(fresh="--fresh" in sys.argv)
