@@ -128,7 +128,7 @@ artifacts/             results, predictions, costs and figures
 
 | Member | Humber Student ID | Piece | Ablation owned |
 | :--- | :--- | :--- | :--- |
-| Ranjay Salmon | [TO COMPLETE] | Project lead, baseline and shared evaluation | None |
+| Ranjay Salmon | N10039663 | Project lead, baseline and shared evaluation | None |
 | Ankit Yadav | N10040403 | Convolutional model | BatchNorm |
 | Ripan Deep Kour | N01454601 | Recurrent model | Bidirectionality |
 | Teja Ekkurthi | [TO COMPLETE] | Attention model and ATIS check | Positional encoding |
