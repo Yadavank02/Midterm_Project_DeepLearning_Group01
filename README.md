@@ -1,160 +1,144 @@
 # AIGC 5500 Midterm Project: Comparing Convolutional, Recurrent, and Attention-Based Architectures
 
-**Course:** AIGC 5500 — Advanced Deep Learning  
-**Project:** Midterm Project: Architecture Comparison on Short Text Classification  
-**Group:** Group 01  
-**Primary Dataset:** SNIPS Voice Assistant Intent Dataset (7 Classes)  
-**Secondary Dataset:** ATIS Airline Travel Information System (Flight Booking Intents)  
+**Course:** AIGC 5500, Advanced Deep Learning
+**Group:** Group 01: Ranjay Salmon, Ankit Yadav, Ripan Deep Kour, Teja Ekkurthi
+**Primary dataset:** SNIPS voice-assistant intents (7 classes)
+**Second dataset:** ATIS flight-booking intents (16 classes after filtering)
 
----
+## Question
 
-## 1. Research Question
+Given the same split, optimizer, training budget and tuning effort, how do a 1D CNN, a Bi-LSTM and a Transformer encoder compare at short-text intent classification, and does a bag-of-words baseline already do the job? We also check which component of each model matters, whether the findings hold on a second dataset, and what each model costs to run.
 
-> **How do the inductive biases of Convolutional (1D CNN), Recurrent (Bi-LSTM), and Attention-Based (Transformer Encoder) architectures affect classification performance, convergence, and inference efficiency on short text intent classification when trained strictly from scratch under identical budgets?**
+## Datasets
 
-We evaluate all three deep neural network families against a defensible unigram Bag-of-Words Logistic Regression baseline across three random seeds (`42`, `123`, `999`), perform one controlled ablation per family, and test whether architectural rankings hold when transitioning from multi-domain voice assistant queries (SNIPS) to specialized flight-booking requests (ATIS).
+Both download automatically from Hugging Face when the code runs:
 
----
+- SNIPS: `load_dataset("benayas/snips")`
+- ATIS: `load_dataset("tuetschek/atis")`
 
-## 2. Datasets & Access
+Repeated utterances are removed before splitting, so no text appears in more than one split. Classes need at least 10 unique examples. The split is stratified 70/15/15 with a fixed seed.
 
-1. **Primary Dataset: SNIPS Voice Assistant**
-   * **Domain:** 7 balanced virtual assistant intent classes (*AddToPlaylist, BookRestaurant, GetWeather, PlayMusic, RateBook, SearchCreativeWork, SearchScreeningEvent*).
-   * **Size:** ~14,484 samples partitioned into 70% Train, 15% Validation, and 15% Test.
-   * **Sequence Length:** Short command utterances (~9 tokens on average, max length capped at 35).
-   * **Source:** Extracted dynamically via `load_dataset("benayas/snips")`.
+| Dataset | Train | Validation | Test | Classes | Vocabulary |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| SNIPS | 9,983 | 2,139 | 2,140 | 7 | 3,671 |
+| ATIS | 3,819 | 819 | 819 | 16 | 590 |
 
-2. **Secondary Dataset: ATIS (Airline Travel Information System)**
-   * **Domain:** Specialized airline travel and flight reservation queries with class imbalance.
-   * **Size:** ~5,871 samples partitioned using identical 70/15/15 stratified splits.
-   * **Source:** Extracted dynamically via `load_dataset("tuetschek/atis")`.
+## Setup
 
----
+Choose the requirements file for your machine. Both are kept so developers on different setups can each have their own environment:
 
-## 3. Project Architecture & File Structure
-
-```text
-Midterm_Project_DeepLearning_Group01/
-├── data_pipeline.py      # Data extraction, EDA generation, tokenization, train-only vocab, DataLoaders
-├── models.py             # PyTorch models: 1D CNN, Bi-LSTM, Transformer Encoder with ablation toggles
-├── main.py               # Master experiment orchestrator: runs all 33 seed/ablation runs across seeds
-├── eval_baseline.py      # Baseline evaluation, validation C-tuning & confusion matrix
-├── eval_cnn.py           # CNN evaluation, BatchNorm ablation metrics & confusion matrix
-├── eval_rnn.py           # Recurrent (Bi-LSTM) evaluation, bidirectionality ablation & confusion matrix
-├── eval_transformer.py   # Transformer evaluation, positional ablation & confusion matrix
-├── compare.py            # Consolidated comparison tables & publication figures (Figures 1, 2, 3)
-├── requirements.txt      # Pinned environment dependencies
-└── artifacts/            # Generated outputs, JSON logs, confusion matrices, and figure plots
-```
-
----
-
-## 4. How to Reproduce All Results
-
-### Step 1: Environment Setup
-Clone the repository and install dependencies in an isolated virtual environment:
+- `requirements-intel-mac.txt`: Intel Macs, tested with Python 3.12 and PyTorch 2.2.2. These are the versions used to run `cost.py`, the notebook and the report build.
+- `requirements.txt`: the original pins (PyTorch 2.15.0) for machines with builds of that version. It has no build for Intel Macs, and we haven't rerun this project on it.
 
 ```bash
-git clone https://github.com/your-username/Midterm_Project_DeepLearning_Group01.git
+git clone https://github.com/Yadavank02/Midterm_Project_DeepLearning_Group01.git
 cd Midterm_Project_DeepLearning_Group01
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-intel-mac.txt
 ```
 
-### Step 2: Run Full Benchmark Pipeline
-Execute the full benchmark suite across all seeds (`42`, `123`, `999`):
+## How to run
+
+Open `midterm.ipynb` and run all cells. With `RUN_EXPERIMENTS = False` it reproduces every table and figure from the committed results. With `True` it retrains everything first. The same steps from the command line:
 
 ```bash
 python main.py
-```
-*Trains the baseline, the three deep models, and all ablations on both SNIPS and ATIS, automatically exporting results to `artifacts/results.json`.*
-
-### Step 3: Generate Report Tables & Figures
-```bash
+python cost.py
 python compare.py
-```
-*Outputs the formatted tables for Sections 4, 5, 6, and 7 of the report and writes Figures 1, 2, and 3 to `artifacts/`.*
-
-### Step 4: Generate Individual Confusion Matrices
-```bash
-python eval_baseline.py
-python eval_cnn.py
-python eval_rnn.py
-python eval_transformer.py
+python diagrams.py
+python report/build_report.py
+python slides/build_slides.py
 ```
 
----
+`main.py` saves after every run and resumes if interrupted. Trained weights go to `checkpoints/`, which is not committed, so `cost.py` needs `main.py` to have been run on that machine first.
 
-## 5. Experimental Results (Exact Outputs)
+**Seeds:** 42, 123, 999. The split seed is fixed at 42, and seeds vary initialisation and shuffling.
 
-### Core Comparison (Primary Dataset: SNIPS)
-*Hyperparameter selection guided by validation performance; test set evaluated once.*
+**Hardware:** training ran on an Intel Core i9-9980HK CPU and a Colab Tesla T4 GPU, recorded for each run in `artifacts/results.json` (runs with no device field ran on the CPU). Cost was measured on the i9-9980HK with 6 threads.
 
-| Architecture | Seed 42 | Seed 123 | Seed 999 | Mean Macro F1 | Spread |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Baseline (Logistic Reg)** | 0.9707 | 0.9671 | 0.9699 | **0.9692** | 0.0036 |
-| **Convolutional (1D CNN)** | 0.9848 | 0.9806 | 0.9839 | **0.9831** | 0.0042 |
-| **Recurrent (Bi-LSTM)** | 0.9829 | 0.9811 | 0.9798 | **0.9813** | 0.0032 |
-| **Attention (Transformer)** | 0.9829 | 0.9779 | 0.97560 | **0.9788** | 0.0074 |
+## Results
 
-### Ablation Studies (SNIPS)
-*Each ablation isolates and modifies exactly one architectural component, holding all other hyperparameters fixed.*
+Test macro F1 for every seed. Each family tuned the same 10-setting grid on validation at seed 42.
 
-| Family | Component Tested | Standard Macro F1 | Ablated Macro F1 | Delta ($\Delta$) | Empirical Finding |
-| :--- | :--- | :---: | :---: | :---: | :--- |
-| **Convolutional** | Batch Normalization | 0.9831 | 0.9842 | **+0.0011** | Removing BatchNorm showed minimal variance on SNIPS due to short, consistent sequence contexts. |
-| **Recurrent** | Bidirectionality | 0.9813 | 0.9799 | **-0.0014** | Unidirectional processing suffers a drop because future contextual tokens help disambiguate early command verbs. |
-| **Attention** | Positional Encoding | 0.9788 | 0.9791 | **+0.0003** | Positional encodings had a negligible impact, indicating local keyword presence dominates over strict token ordering in SNIPS. |
+### SNIPS
 
-### Second Dataset Generalization Check (ATIS)
-*Evaluating whether the ranking and inductive biases observed on SNIPS generalize to ATIS.*
+| Model | Seed 42 | Seed 123 | Seed 999 | Mean | Spread |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| Baseline | 0.9812 | 0.9822 | 0.9827 | 0.9820 | 0.0014 |
+| CNN | 0.9842 | 0.9822 | 0.9814 | 0.9826 | 0.0028 |
+| Bi-LSTM | 0.9807 | 0.9803 | 0.9818 | 0.9809 | 0.0015 |
+| Transformer | 0.9775 | 0.9738 | 0.9765 | 0.9759 | 0.0037 |
 
-| Architecture | SNIPS Mean F1 | ATIS Mean F1 | ATIS Rank | Architectural Behavior |
-| :--- | :---: | :---: | :---: | :--- |
-| **Baseline (Logistic Reg)** | 0.9692 | 0.7162 | Rank 4 | Bag-of-words macro F1 collapses significantly on ATIS due to severe class imbalance and overlapping vocabulary. |
-| **Convolutional (1D CNN)** | 0.9831 | 0.7968 | Rank 3 | Captures local phrasal triggers (*"flight from"*, *"round trip"*), improving over baseline. |
-| **Recurrent (Bi-LSTM)** | 0.9813 | 0.8161 | Rank 1 | Masked pooling over temporal steps effectively resolves complex sequential syntax in flight requests. |
-| **Attention (Transformer)** | 0.9788 | 0.8132 | Rank 2 | Self-attention provides strong generalization on ATIS by directly linking source and destination slots. |
+### Ablations (SNIPS)
 
-> **Conclusion on Second Dataset:** **Ranking Reversal Confirmed.** While keyword-dense SNIPS allows simpler local/BoW features to perform competitively, the syntactic complexity and slot dependencies of ATIS cause the architectural ranking to shift, with deep sequence models—led by Bi-LSTM (0.8161) and the Transformer (0.8132)—vastly outperforming the baseline macro F1 (0.1762).
+| Component removed | Standard | Ablated | Change | Per seed (42, 123, 999) |
+| :--- | ---: | ---: | ---: | :--- |
+| CNN: BatchNorm | 0.9826 | 0.9803 | -0.0023 | -0.0014, -0.0027, -0.0028 |
+| LSTM: backward pass | 0.9809 | 0.9789 | -0.0021 | -0.0004, +0.0000, -0.0058 |
+| Transformer: positions | 0.9759 | 0.9769 | +0.0010 | +0.0014, +0.0028, -0.0013 |
 
-### Operational Inference Cost Profiling
-*Measured on test batches with identical sequence length ($L=35$ tokens).*
+### ATIS
 
-| Architecture | Total Trainable Parameters | Inference Latency / Sample (ms) | Peak Memory Allocation |
-| :--- | :---: | :---: | :--- |
-| **Convolutional (1D CNN)** | 587,071 | 0.1187 ms | Minimal (CPU/MPS BLAS) |
-| **Recurrent (Bi-LSTM)** | 734,855 | 0.1836 ms | Minimal (CPU/MPS BLAS) |
-| **Attention (Transformer)** | 734,727 | 0.2523 ms | Minimal (CPU/MPS BLAS) |
+| Model | Seed 42 | Seed 123 | Seed 999 | Mean | Spread |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| Baseline | 0.7649 | 0.7602 | 0.7277 | 0.7509 | 0.0371 |
+| CNN | 0.8462 | 0.8248 | 0.8387 | 0.8366 | 0.0214 |
+| Bi-LSTM | 0.8343 | 0.8271 | 0.8483 | 0.8365 | 0.0212 |
+| Transformer | 0.8019 | 0.7370 | 0.7765 | 0.7718 | 0.0649 |
 
-*Parameter Counts:* All three deep architectures are tightly matched within the required parameter bounds.
+### Inference cost
 
----
+| Model | Parameters | ms per sample | Peak process memory (MB) | Increase during inference (MB) |
+| :--- | ---: | ---: | ---: | ---: |
+| Baseline | 25,704 | 0.0035 | 333.9 | 0.4 |
+| CNN | 588,095 | 0.0566 | 342.6 | 7.6 |
+| Bi-LSTM | 735,879 | 0.1118 | 351.5 | 15.4 |
+| Transformer | 735,751 | 0.1272 | 355.0 | 17.3 |
 
-## 6. Video Presentation
+### What we found
 
-* **Link:** 
-* **Presenter:** 
-* **Duration:** 
-* **Access Permissions:** Humber-wide viewable link + directly shared with `hossein.pourmodheji@humber.ca`.
+- On SNIPS, the baseline and CNN can't be separated, and every Transformer seed falls below every other model's seeds.
+- On ATIS, every CNN and Bi-LSTM seed beats every baseline and Transformer seed. The two tie, and the Transformer overlaps the baseline.
+- No ablation shows a large effect on SNIPS. BatchNorm removal lowers all three seeds slightly, but that comparison also crosses devices.
+- Explanations of why the models differ are our interpretation, not tested causes. See section 8 of the report for limitations, including mixed training hardware.
 
----
+## Repository layout
 
-## 7. Group Contribution Table
+```text
+data_pipeline.py       loading, duplicate removal, splits, vocabulary, DataLoaders
+models.py              baseline, CNN, Bi-LSTM, Transformer with ablation toggles
+main.py                tuning and all experiment runs
+cost.py                latency and peak memory from trained checkpoints
+compare.py             tables, figures and confusion matrices
+diagrams.py            architecture diagram traced from models.py
+midterm.ipynb          runnable notebook
+report/report.pdf      written report
+slides/slides.pdf      presentation slides
+artifacts/             results, predictions, costs and figures
+```
 
-| Member Name | Humber Student ID | Assigned Piece & Role | Key Responsibilities |
+## Video presentation
+
+* **Link:** [TO COMPLETE]
+* **Presenter:** [TO COMPLETE]
+* **Length:** [TO COMPLETE]
+
+## Contributions
+
+| Member | Humber Student ID | Piece | Ablation owned |
 | :--- | :--- | :--- | :--- |
-| **Ranjay Salmon** |  | Project Lead & Baseline | Orchestrating main pipeline execution, data preprocessing pipeline, stratified splitting, Logistic Regression baseline tuning, and inference profiling |
-| **Ankit Yadav** | N10040403 | Convolutional Model (1D CNN) | TextCNN implementation (`models.py`), Batch Normalization ablation study, convolutional receptive field analysis, and confusion matrix generation |
-| **Ripan Deep Kour** | N01454601 | Recurrent Model (LSTM) | Bi-LSTM implementation (`models.py`), masked temporal pooling mechanism, bidirectionality ablation study, and training loss curve convergence tracking |
-| **Teja Ekkurthi** |  | Attention Model & ATIS | Transformer Encoder implementation, positional encoding ablation, ATIS secondary dataset porting, cross-dataset ranking analysis, and final report consolidation |
+| Ranjay Salmon | N10039663 | Project lead, baseline and shared evaluation | None |
+| Ankit Yadav | N10040403 | Convolutional model | BatchNorm |
+| Ripan Deep Kour | N01454601 | Recurrent model | Bidirectionality |
+| Teja Ekkurthi | [TO COMPLETE] | Attention model and ATIS check | Positional encoding |
 
----
+The commit history shows who committed each change, including the later fixes and reruns on `assignment-fixes`.
 
-## 8. Academic Integrity & References
+## References and AI assistance
 
-1. Kim, Y. (2014). *Convolutional Neural Networks for Sentence Classification*. EMNLP 2014.
-2. Vaswani, A., et al. (2017). *Attention Is All You Need*. NeurIPS 2017.
-3. Coucke, A., et al. (2018). *Snips Voice Platform: An embedded Spoken Language Understanding system*. arXiv:1805.10190.
-4. Hemphill, C. T., et al. (1990). *The ATIS spoken language systems pilot corpus*. DARPA Speech and Natural Language Workshop.
+1. Kim, Y. (2014). *Convolutional Neural Networks for Sentence Classification*. EMNLP.
+2. Vaswani, A., et al. (2017). *Attention Is All You Need*. NeurIPS.
+3. Coucke, A., et al. (2018). *Snips Voice Platform*. arXiv:1805.10190.
+4. Hemphill, C. T., et al. (1990). *The ATIS Spoken Language Systems Pilot Corpus*. DARPA Speech and Natural Language Workshop.
+5. Claude Code (Anthropic) helped review the code, implement fixes, generate figures, and draft the report and slides.

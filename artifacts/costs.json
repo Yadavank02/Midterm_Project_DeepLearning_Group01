@@ -1,0 +1,92 @@
+{
+ "hardware": {
+  "cpu": "Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz",
+  "os": "macOS-26.7.1-x86_64-i386-64bit",
+  "threads": 6,
+  "torch": "2.2.2",
+  "batch": 64,
+  "length": 35
+ },
+ "models": {
+  "Baseline": {
+   "42": {
+    "params": 25704,
+    "latency_ms": 0.003763733437835981,
+    "peak_rss_increase_mb": 0.1875,
+    "peak_rss_mb": 334.54296875
+   },
+   "123": {
+    "params": 25704,
+    "latency_ms": 0.003477700234952863,
+    "peak_rss_increase_mb": 0.96484375,
+    "peak_rss_mb": 332.32421875
+   },
+   "999": {
+    "params": 25704,
+    "latency_ms": 0.0032930966415278817,
+    "peak_rss_increase_mb": 0.12890625,
+    "peak_rss_mb": 334.88671875
+   }
+  },
+  "CNN_Standard": {
+   "42": {
+    "params": 588095,
+    "latency_ms": 0.055923525234220506,
+    "peak_rss_increase_mb": 7.29296875,
+    "peak_rss_mb": 342.921875
+   },
+   "123": {
+    "params": 588095,
+    "latency_ms": 0.05664043953174769,
+    "peak_rss_increase_mb": 7.35546875,
+    "peak_rss_mb": 342.99609375
+   },
+   "999": {
+    "params": 588095,
+    "latency_ms": 0.05726547757831213,
+    "peak_rss_increase_mb": 8.2578125,
+    "peak_rss_mb": 341.9453125
+   }
+  },
+  "RNN_BiLSTM": {
+   "42": {
+    "params": 735879,
+    "latency_ms": 0.10644848625020131,
+    "peak_rss_increase_mb": 15.7109375,
+    "peak_rss_mb": 351.125
+   },
+   "123": {
+    "params": 735879,
+    "latency_ms": 0.11421203601571506,
+    "peak_rss_increase_mb": 15.21875,
+    "peak_rss_mb": 351.61328125
+   },
+   "999": {
+    "params": 735879,
+    "latency_ms": 0.11460499531267487,
+    "peak_rss_increase_mb": 15.1328125,
+    "peak_rss_mb": 351.890625
+   }
+  },
+  "Transformer_Standard": {
+   "42": {
+    "params": 735751,
+    "latency_ms": 0.1294510787499803,
+    "peak_rss_increase_mb": 17.33984375,
+    "peak_rss_mb": 354.984375
+   },
+   "123": {
+    "params": 735751,
+    "latency_ms": 0.12594623531299476,
+    "peak_rss_increase_mb": 17.390625,
+    "peak_rss_mb": 355.19140625
+   },
+   "999": {
+    "params": 735751,
+    "latency_ms": 0.12629865000008067,
+    "peak_rss_increase_mb": 17.29296875,
+    "peak_rss_mb": 354.91796875
+   }
+  }
+ }
+}
