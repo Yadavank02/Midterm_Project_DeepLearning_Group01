@@ -118,9 +118,9 @@ artifacts/             results, predictions, costs and figures
 
 ## Video presentation
 
-* **Link:** [TO COMPLETE]
-* **Presenter:** [TO COMPLETE]
-* **Length:** [TO COMPLETE]
+* **Link:** https://humberital-my.sharepoint.com/:v:/g/personal/n01770622_humber_ca/IQC9aGyGlsPBT611KSSxdbQ_AeX2yb5FMczYU1oyGJNB808
+* **Presenter:** Teja Ekkurthi
+* **Length:** 19min 11sec
 
 ## Contributions
 
